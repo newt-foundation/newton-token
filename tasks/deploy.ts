@@ -1,4 +1,5 @@
-import { ethers } from "hardhat";
+import { task } from "hardhat/config";
+import { HardhatRuntimeEnvironment } from "hardhat/types";
 
 task("deploy-token", "Deploys a custom ERC20")
   .addParam("name", "Token name")
@@ -7,19 +8,20 @@ task("deploy-token", "Deploys a custom ERC20")
   .addParam("minters", "Comma separated list of address(s) to be granted minting permissions")
   .setAction(async (taskArgs, hre: HardhatRuntimeEnvironment) => {
   try {
-    const [deployer] = await ethers.getSigners();
+    const [deployer] = await hre.ethers.getSigners();
     // Token Parameters
     const name = taskArgs.name;
     const symbol = taskArgs.symbol;
-    const cap = hre.ethers.parseEther(taskArgs.symbol);
+    const cap = hre.ethers.parseEther(taskArgs.cap);
 
     console.log("Deploying Custom Token contract...");
     console.log(`Name: ${name}`);
     console.log(`Symbol: ${symbol}`);
     console.log(`Cap: ${cap}`);
+    console.log(`Admin: ${deployer.address}`);
 
     // Get the contract factory
-    const CustomToken = await ethers.getContractFactory("CustomToken");
+    const CustomToken = await hre.ethers.getContractFactory("CustomToken");
     const default_admin = deployer.address;
     const minters = taskArgs.minters.split(',').map((addr: string) => addr.trim());
     minters.forEach((addr: string) => {
@@ -42,7 +44,7 @@ task("deploy-token", "Deploys a custom ERC20")
       await customToken.deploymentTransaction()?.wait(6);
 
       console.log("Verifying contract on Etherscan...");
-      await verify(address, [name, symbol, cap, default_admin, minter, pauser]);
+      await verify(address, [name, symbol, cap, default_admin, minters]);
     }
 
   } catch (error) {
@@ -66,10 +68,4 @@ async function verify(contractAddress: string, args: any[]) {
   }
 }
 
-// Execute deployment
-main()
-  .then(() => process.exit(0))
-  .catch((error) => {
-    console.error(error);
-    process.exit(1);
-  });
+export default {};
