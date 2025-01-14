@@ -1,4 +1,4 @@
-# Sample Hardhat Project
+# Custom ERC20 For Newton Token
 
 Copy .env.example to .env, and fill in accordingly
 
