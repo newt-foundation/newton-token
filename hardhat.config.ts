@@ -3,6 +3,7 @@ import "@nomicfoundation/hardhat-toolbox";
 import * as dotenv from "dotenv";
 import "./tasks/deploy";
 
+require('@openzeppelin/hardhat-upgrades');
 dotenv.config(); // Load environment variables from .env file
 
 const PRIVATE_KEY = process.env.PRIVATE_KEY || ""; // Your private key
