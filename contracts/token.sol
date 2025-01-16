@@ -53,6 +53,6 @@ contract CustomTokenFinal is Initializable, ERC20Upgradeable, ERC20BurnableUpgra
         onlyRole(DEFAULT_ADMIN_ROLE)
         override
     {
-		revert("Upgrades disabled");
+        revert("Upgrades disabled");
     }
 }
