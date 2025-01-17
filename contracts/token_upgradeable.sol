@@ -8,7 +8,7 @@ import {ERC20PermitUpgradeable} from "@openzeppelin/contracts-upgradeable/token/
 import {Initializable} from "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import {UUPSUpgradeable} from "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 
-contract CustomTokenFinal is Initializable, ERC20Upgradeable, ERC20BurnableUpgradeable, AccessControlUpgradeable, ERC20PermitUpgradeable, UUPSUpgradeable {
+contract CustomTokenUpgradeable is Initializable, ERC20Upgradeable, ERC20BurnableUpgradeable, AccessControlUpgradeable, ERC20PermitUpgradeable, UUPSUpgradeable {
     uint256 private _cap;
     bytes32 public constant MINTER_ROLE = keccak256("MINTER_ROLE");
 
@@ -52,7 +52,5 @@ contract CustomTokenFinal is Initializable, ERC20Upgradeable, ERC20BurnableUpgra
         internal
         onlyRole(DEFAULT_ADMIN_ROLE)
         override
-    {
-        revert("Upgrades disabled");
-    }
+    {}
 }

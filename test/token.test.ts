@@ -1,8 +1,8 @@
 import { expect } from "chai";
-import { ethers } from "hardhat";
+import { ethers, upgrades } from "hardhat";
 import { Contract, Signer } from "ethers";
 
-describe("CustomToken Contract", function () {
+describe("CustomTokenUpgradeable Contract", function () {
   let customToken: Contract;
   let owner: Signer, minter1: Signer, minter2: Signer, nonMinter: Signer;
   let ownerAddress: string, minter1Address: string, minter2Address: string, nonMinterAddress: string;
@@ -22,15 +22,13 @@ describe("CustomToken Contract", function () {
 
   beforeEach(async () => {
     // Deploy the CustomToken contract
-    const CustomToken = await ethers.getContractFactory("CustomToken");
-    customToken = await CustomToken.deploy(
-      NAME,
-      SYMBOL,
-      CAP,
-      ownerAddress,
-      [minter1Address, minter2Address]
+    const CustomToken = await ethers.getContractFactory("CustomTokenUpgradeable");
+    customToken = await upgrades.deployProxy(
+      CustomToken,
+      [NAME, SYMBOL, CAP, ownerAddress, [minter1Address, minter2Address]],
+      { initializer: "initialize" }
     );
-    await customToken.waitForDeployment();
+    //await customToken.waitForDeployment();
   });
 
   it("should deploy with the correct name, symbol, and cap", async () => {
