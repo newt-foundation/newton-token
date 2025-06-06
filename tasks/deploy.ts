@@ -38,6 +38,8 @@ task("deploy-proxy-token", "Deploys a custom ERC20")
         [name, symbol, cap, default_admin, minters],
         { initializer: "initialize" }
     );
+
+    await customToken.deploymentTransaction()?.wait(1);
     const address = await customToken.getAddress();
     console.log(`Token deployed to: ${address}`);
 
@@ -65,15 +67,17 @@ task("deploy-proxy-token", "Deploys a custom ERC20")
 task("deploy-final-upgrade", "Deploys a custom ERC20")
     .addParam("proxy", "Proxy Contract Address")
     .setAction(async (taskArgs, hre: HardhatRuntimeEnvironment) => {
-
+    const { ethers, upgrades } = hre;
     const CustomTokenFinal = await ethers.getContractFactory("CustomTokenFinal");
     const upgradedToken = await upgrades.upgradeProxy(taskArgs.proxy, CustomTokenFinal);
+    console.log("Waiting for block confirmations...");
+    await upgradedToken.deployTransaction.wait(6);
+    const address = await upgrades.erc1967.getImplementationAddress(taskArgs.proxy);
+    console.log("Final Contract Address: ", address);
     if (network.name !== "hardhat" && network.name !== "localhost") {
-      console.log("Waiting for block confirmations...");
-      await upgradedToken.deploymentTransaction()?.wait(6);
-      await verify(upgradedToken.getAddresss(), []);
+      await verify(address, []);
     }
-    console.log("Upgraded to final implementation at:", upgradedToken.getAddress());
+    console.log("Upgraded to final implementation at:", address);
 });
 
 async function verify(contractAddress: string, args: any[]) {
@@ -90,5 +94,29 @@ async function verify(contractAddress: string, args: any[]) {
     }
   }
 }
+
+task("verify-impl", "Verifies a contract on the current Etherscan-compatible explorer")
+  .addParam("address", "Contract address to verify")
+  .addOptionalVariadicPositionalParam(
+    "args",
+    "Constructor arguments, if any (space-separated)"
+  )
+  .setAction(async (taskArgs, hre) => {
+    const { address, args } = taskArgs;
+    const constructorArguments = args ?? []; // empty array if no args
+
+    console.log(`🔍 Verifying ${address} …`);
+    try {
+      await hre.run("verify:verify", { address, constructorArguments });
+      console.log("✅ Verification submitted!");
+    } catch (err: any) {
+      const msg = err?.message?.toLowerCase() || "";
+      if (msg.includes("already verified")) {
+        console.log("ℹ️  Contract is already verified.");
+      } else {
+        console.error("❌ Verification failed:", err);
+      }
+    }
+  });
 
 export default {};
