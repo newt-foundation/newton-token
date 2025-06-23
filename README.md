@@ -8,18 +8,18 @@
 
 NEWT powers key protocol functions, including:
 
-- 🧾 Staking
-- ⛽ Gas fees
-- 🔐 Permission updates
-- 🗳️ Governance
+- Staking
+- Gas fees
+- Permission updates
+- Governance
 
 Developers and operators use NEWT to deploy and manage autonomous agents.
 
 The Newton Protocol aims to bring programmable automation fully onchain using:
 
-- 🧠 Trusted Execution Environments (TEEs)
-- 🔍 Zero-Knowledge Proofs (ZKPs)
-- 🧩 A modular agent framework
+- Trusted Execution Environments (TEEs)
+- Zero-Knowledge Proofs (ZKPs)
+- A modular agent framework
 
 This project is licensed under the [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0).
 
